@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSystem.Data;
 using RecruitmentSystem.Models;
-using RecruitmentSystem.Repository;
 
 namespace RecruitmentSystem.Repository.Impl
 {
@@ -14,58 +13,48 @@ namespace RecruitmentSystem.Repository.Impl
             _context = context;
         }
 
-        public async Task<IEnumerable<Application>> GetAllApplications()
+        public async Task<Application> SubmitApplication(Application application)
         {
-            return await _context.Applications.Include(a => a.Candidate).Include(a => a.Job).ToListAsync();
-        }
-
-        public async Task<Application> GetApplicationById(int id)
-        {
-            return await _context.Applications.Include(a => a.Candidate).FirstOrDefaultAsync(a => a.ApplicationID == id);
-        }
-
-        public async Task<Application> AddApplication(Application application)
-        {
+            application.Status = ApplicationStatus.Submitted;
+            application.ReviewerID = null;  // Reviewer is assigned later
             _context.Applications.Add(application);
             await _context.SaveChangesAsync();
             return application;
         }
 
-        public async Task<Application> UpdateApplication(Application application)
+        public async Task<IEnumerable<Application>> GetAllApplications()
         {
-            _context.Applications.Update(application);
-            await _context.SaveChangesAsync();
-            return application;
+            return await _context.Applications.Include(a => a.Job).Include(a => a.Candidate).ToListAsync();
         }
 
-        public async Task<bool> DeleteApplication(int id)
+        public async Task<Application> GetApplicationById(int id)
         {
-            var application = await _context.Applications.FindAsync(id);
+            return await _context.Applications.Include(a => a.Job).Include(a => a.Candidate).FirstOrDefaultAsync(a => a.ApplicationID == id);
+        }
+
+        public async Task<IEnumerable<Application>> GetApplicationsByCandidate(int candidateId)
+        {
+            return await _context.Applications.Where(a => a.CandidateID == candidateId).ToListAsync();
+        }
+
+        public async Task<bool> UpdateApplicationStatus(int applicationId, ApplicationStatus status)
+        {
+            var application = await _context.Applications.FindAsync(applicationId);
             if (application == null) return false;
 
-            _context.Applications.Remove(application);
+            application.Status = status;
             await _context.SaveChangesAsync();
             return true;
         }
 
-         public async Task<IEnumerable<Application>> GetApplicationsByStatus(string status)
+         public async Task<bool> AssignReviewerToApplication(int applicationId, int reviewerId)
         {
-            ApplicationStatus appStatus = (ApplicationStatus)Enum.Parse(typeof(ApplicationStatus),status);
+            var application = await _context.Applications.FindAsync(applicationId);
+            if (application == null) return false;
 
-            if(appStatus == ApplicationStatus.Shortlisted){
-
-                return await _context.Applications
-                .Include(a => a.Candidate)
-                .Where(a => a.Status == ApplicationStatus.Shortlisted) 
-                .ToListAsync();
-
-            }
-
-            return await _context.Applications
-                .Include(a => a.Candidate)
-                .ToListAsync();
-
-            
+            application.ReviewerID = reviewerId;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RecruitmentSystem.DTOs;
 using RecruitmentSystem.Models;
 using RecruitmentSystem.Service;
 
@@ -18,7 +19,28 @@ namespace RecruitmentSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _jobService.GetAllJobs());
+            var jobs = await _jobService.GetAllJobs();
+            var result = jobs.Select(
+                job => new
+                {
+                    job.Position,
+                    job.NoOfPositions,
+                    job.Description,
+                    job.Location,
+                    job.Salary,
+                    job.Status,
+                    job.StatusReason,
+                    job.PreferredSkills,
+                    job.OtherCriteria,
+                    job.RequiredExperience,
+                    job.Rounds,
+                    // // job.PostedBy,
+                    // JobSkills = job.JobSkills.Select(js => new
+                    // {
+                    //     SkillName = js.Skill.SkillName
+                    // }).ToList()
+                });
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -26,17 +48,33 @@ namespace RecruitmentSystem.Controllers
         {
             var job = await _jobService.GetJobById(id);
             if (job == null) return NotFound(new { message = "Job not found" });
-            return Ok(job);
+            var result = new
+            {
+                job.Position,
+                job.NoOfPositions,
+                job.Description,
+                job.Location,
+                job.Salary,
+                job.Status,
+                job.StatusReason,
+                job.PreferredSkills,
+                job.OtherCriteria,
+                job.RequiredExperience,
+                job.Rounds,
+                job.PostedBy,
+                JobSkills = job.JobSkills.Select(js => new
+                {
+                    SkillName = js.Skill.SkillName
+                }).ToList()
+            };
+            return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Job job)
-        {
-            return Ok(await _jobService.AddJob(job));
-        }
+
+    
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]Job job)
+        public async Task<IActionResult> Update(int id, [FromBody] Job job)
         {
             if (id != job.JobID) return BadRequest();
             return Ok(await _jobService.UpdateJob(job));
@@ -48,7 +86,7 @@ namespace RecruitmentSystem.Controllers
             return Ok(await _jobService.DeleteJob(id));
         }
 
-         [HttpGet("open")]
+        [HttpGet("open")]
         public async Task<IActionResult> GetOpenJobs()
         {
             var openJobs = await _jobService.GetOpenJobs();
@@ -58,5 +96,19 @@ namespace RecruitmentSystem.Controllers
             }
             return Ok(openJobs);
         }
+
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateJobStatus(int id, [FromBody] JobStatusUpdateDTO jobStatusUpdateDTO)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var success = await _jobService.UpdateJobStatus(id, jobStatusUpdateDTO.Status, jobStatusUpdateDTO.StatusReason);
+            if (!success) return NotFound(new { message = "Job not found" });
+
+            return Ok(new { message = "Job status updated successfully" });
+        }
+
+    
     }
 }

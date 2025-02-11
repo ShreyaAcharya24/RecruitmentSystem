@@ -18,7 +18,7 @@ public class JobReviwer {
     public int JobID {get; set;}
     
     [JsonIgnore]
-    public Application? Job {get; set;}
+    public Job? Job {get; set;}
 
 
 }

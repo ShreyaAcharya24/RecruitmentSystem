@@ -4,12 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RecruitmentSystem.Models
 {
-    public enum JobStatus
-    {
-        Open,
-        Closed
-    }
-
+   
     public class Job
     {
         [Key]
@@ -50,6 +45,10 @@ namespace RecruitmentSystem.Models
 
         [JsonIgnore]
         public Employee? Employee { get; set; }
+
+        // Minimum required skills for a job
+        
+        public ICollection<JobSkill> JobSkills {get; set;} = new List<JobSkill>();
 
     }
 }

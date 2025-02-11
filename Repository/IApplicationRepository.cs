@@ -4,17 +4,12 @@ namespace RecruitmentSystem.Repository
 {
     public interface IApplicationRepository
     {
+        Task<Application> SubmitApplication(Application application);
         Task<IEnumerable<Application>> GetAllApplications();
         Task<Application> GetApplicationById(int id);
+        Task<IEnumerable<Application>> GetApplicationsByCandidate(int candidateId);
+        Task<bool> UpdateApplicationStatus(int applicationId, ApplicationStatus status);
+        Task<bool> AssignReviewerToApplication(int applicationId, int reviewerId);
 
-        // Status, Comments and Reviewer ID should be Hidden from candidate 
-        Task<Application> AddApplication(Application application);
-
-        // Allow only specific fields to update
-        Task<Application> UpdateApplication(Application application);
-        Task<bool> DeleteApplication(int id);
-
-        // Filter Applications using ApplicationStatus
-        Task<IEnumerable<Application>> GetApplicationsByStatus(string status);
     }
 }

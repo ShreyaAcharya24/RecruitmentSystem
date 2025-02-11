@@ -1,6 +1,7 @@
-using RecruitmentSystem.Models;
 using RecruitmentSystem.Repository;
-using RecruitmentSystem.Service;
+using RecruitmentSystem.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RecruitmentSystem.Service.Impl
 {
@@ -13,22 +14,34 @@ namespace RecruitmentSystem.Service.Impl
             _applicationRepository = applicationRepository;
         }
 
-        public async Task<IEnumerable<Application>> GetAllApplications() => await _applicationRepository.GetAllApplications();
-
-        public async Task<Application> GetApplicationById(int id) => await _applicationRepository.GetApplicationById(id);
-
-        public async Task<Application> AddApplication(Application application) => await _applicationRepository.AddApplication(application);
-
-        public async Task<Application> UpdateApplication(Application job) => await _applicationRepository.UpdateApplication(job);
-
-        public async Task<bool> DeleteApplication(int id) => await _applicationRepository.DeleteApplication(id);
-
-        Task<IEnumerable<Application>> IApplicationService.GetApplicationsByStatus(string status)
+        public async Task<Application> SubmitApplication(Application application)
         {
-            throw new NotImplementedException();
+            return await _applicationRepository.SubmitApplication(application);
         }
 
-        // public async Task<IEnumerable<Application>> GetOpe() => await _applicationRepository.GetOpenJobs();
+        public async Task<IEnumerable<Application>> GetAllApplications()
+        {
+            return await _applicationRepository.GetAllApplications();
+        }
 
+        public async Task<Application> GetApplicationById(int id)
+        {
+            return await _applicationRepository.GetApplicationById(id);
+        }
+
+        public async Task<IEnumerable<Application>> GetApplicationsByCandidate(int candidateId)
+        {
+            return await _applicationRepository.GetApplicationsByCandidate(candidateId);
+        }
+
+        public async Task<bool> UpdateApplicationStatus(int applicationId, ApplicationStatus status)
+        {
+            return await _applicationRepository.UpdateApplicationStatus(applicationId, status);
+        }
+
+        public async Task<bool> AssignReviewerToApplication(int applicationId, int reviewerId)
+        {
+            return await _applicationRepository.AssignReviewerToApplication(applicationId, reviewerId);
+        }
     }
 }

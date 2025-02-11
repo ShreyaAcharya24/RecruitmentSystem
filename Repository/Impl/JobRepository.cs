@@ -16,12 +16,20 @@ namespace RecruitmentSystem.Repository.Impl
 
         public async Task<IEnumerable<Job>> GetAllJobs()
         {
-            return await _context.Jobs.Include(j => j.Employee).ToListAsync();
+            return await _context.Jobs
+            .Include(j => j.Employee)
+            .Include(j => j.JobSkills)
+                .ThenInclude(js => js.Skill)
+            .ToListAsync();
         }
 
         public async Task<Job> GetJobById(int id)
         {
-            return await _context.Jobs.Include(j => j.Employee).FirstOrDefaultAsync(j => j.JobID == id);
+            return await _context.Jobs
+            .Include(j => j.Employee)
+            .Include(j => j.JobSkills)
+                .ThenInclude(js => js.Skill)
+            .FirstOrDefaultAsync(j => j.JobID == id);
         }
 
         public async Task<Job> AddJob(Job job)
@@ -48,6 +56,7 @@ namespace RecruitmentSystem.Repository.Impl
             return true;
         }
 
+
          public async Task<IEnumerable<Job>> GetOpenJobs()
         {
             return await _context.Jobs
@@ -55,5 +64,18 @@ namespace RecruitmentSystem.Repository.Impl
                 .Where(j => j.Status == JobStatus.Open) 
                 .ToListAsync();
         }
+
+        public async Task<bool> UpdateJobStatus(int jobId, JobStatus status, string statusReason)
+        {
+            var job = await _context.Jobs.FindAsync(jobId);
+            if (job == null) return false;
+
+            job.Status = status;
+            job.StatusReason = statusReason;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+       
     }
 }

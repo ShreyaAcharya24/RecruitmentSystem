@@ -16,7 +16,7 @@ namespace RecruitmentSystem.Data
 
         public DbSet<Skill> Skills { get; set; }
 
-        public DbSet<Application> Jobs { get; set; }
+        public DbSet<Job> Jobs { get; set; }
 
         public DbSet<JobSkill> JobSkills { get; set; }
         public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
@@ -52,18 +52,25 @@ namespace RecruitmentSystem.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Relationship between Job and Employee who Posted the job
-            modelBuilder.Entity<Application>()
+            modelBuilder.Entity<Job>()
                 .HasOne(j => j.Employee)
                 .WithMany()
                 .HasForeignKey(j => j.PostedBy)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
+
+            // Relationship: Job → JobSkills (One job can have multiple skills)
+                modelBuilder.Entity<Job>()
+                .HasMany(j => j.JobSkills)
+                .WithOne(js => js.Job)
+                .HasForeignKey(js => js.JobID)
+        .       OnDelete(DeleteBehavior.Cascade);
 
             // Relationship between JobSkill and Job
             modelBuilder.Entity<JobSkill>()
                 .HasOne(js => js.Job)
                 .WithMany()
                 .HasForeignKey(js => js.JobID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
 
             // Relationship between JobSkill and Skill
@@ -78,7 +85,7 @@ namespace RecruitmentSystem.Data
                 .HasOne(es => es.Employee)
                 .WithMany()
                 .HasForeignKey(es => es.EmployeeID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
 
             // Relationship between EmployeeSkill and Skill
@@ -93,7 +100,7 @@ namespace RecruitmentSystem.Data
                 .HasOne(cs => cs.Candidate)
                 .WithMany()
                 .HasForeignKey(cs => cs.CandidateID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
 
             // Relationship between CandidateSkill and Skill
@@ -115,14 +122,14 @@ namespace RecruitmentSystem.Data
                 .HasOne(j => j.Job)
                 .WithMany()
                 .HasForeignKey(j => j.JobID)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Restrict); 
 
                 // Relationship between Application and Job 
                 modelBuilder.Entity<Application>()
                 .HasOne(a => a.Job)
                 .WithMany()
                 .HasForeignKey(a => a.JobID)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.NoAction); 
 
                  // Relationship between Application and Candidate 
                 modelBuilder.Entity<Application>()
@@ -136,7 +143,7 @@ namespace RecruitmentSystem.Data
                 .HasOne(a => a.Reviewer)
                 .WithMany()
                 .HasForeignKey(a => a.ReviewerID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
 
 

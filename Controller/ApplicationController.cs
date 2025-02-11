@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using RecruitmentSystem.Models;
 using RecruitmentSystem.Service;
 
+
 namespace RecruitmentSystem.Controllers
 {
     [Route("api/[controller]")]
@@ -10,44 +11,53 @@ namespace RecruitmentSystem.Controllers
     {
         private readonly IApplicationService _applicationService;
 
-        public ApplicationController(IJobService applicationService)
+        public ApplicationController(IApplicationService applicationService)
         {
             _applicationService = applicationService;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SubmitApplication([FromBody] Application application)
+        {
+            var result = await _applicationService.SubmitApplication(application);
+            return Ok(new { message = "Application submitted", application = result });
+        }
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllApplications()
         {
             return Ok(await _applicationService.GetAllApplications());
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetApplicationById(int id)
         {
             var application = await _applicationService.GetApplicationById(id);
             if (application == null) return NotFound(new { message = "Application not found" });
             return Ok(application);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Application application)
+        [HttpGet("candidate/{candidateId}")]
+        public async Task<IActionResult> GetApplicationsByCandidate(int candidateId)
         {
-            return Ok(await _applicationService.AddApplication(application));
+            return Ok(await _applicationService.GetApplicationsByCandidate(candidateId));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Application application)
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateApplicationStatus(int id, [FromBody] ApplicationStatus status)
         {
-            if (id != application.ApplicationID) return BadRequest();
-            return Ok(await _applicationService.UpdateApplication(application));
+            var success = await _applicationService.UpdateApplicationStatus(id, status);
+            if (!success) return NotFound(new { message = "Application not found" });
+            return Ok(new { message = "Application status updated" });
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPatch("{applicationId}/assign-reviewer/{reviewerId}")]
+        public async Task<IActionResult> AssignReviewerToApplication(int applicationId, int reviewerId)
         {
-            return Ok(await _applicationService.DeleteApplication(id));
-        }
+            var success = await _applicationService.AssignReviewerToApplication(applicationId, reviewerId);
+            if (!success) return NotFound(new { message = "Application not found or reviewer invalid" });
 
-       
+            return Ok(new { message = "Reviewer assigned successfully" });
+        }
     }
 }

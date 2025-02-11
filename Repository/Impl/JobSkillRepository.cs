@@ -14,6 +14,14 @@ namespace RecruitmentSystem.Repository.Impl
             _context = context;
         }
 
+        public async Task<IEnumerable<JobSkill>> AddJobSkills(List<JobSkill> jobSkills)
+        {
+            _context.JobSkills.AddRange(jobSkills);
+            await _context.SaveChangesAsync();
+            return jobSkills;
+        }
+
+
         public async Task<IEnumerable<JobSkill>> GetAllJobSkills()
         {
             return await _context.JobSkills.Include(js => js.Job).Include(js => js.Skill).ToListAsync();

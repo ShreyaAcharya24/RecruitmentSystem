@@ -5,16 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace RecruitmentSystem.Models
 {
-    public enum ApplicationStatus {
-        Submitted,
-        Shortlisted,
-        Interviewed,
-        UnderReview,
-        Hired,
-        Rejected,
-
-    }
-
     public class Application
     {
 
@@ -25,7 +15,7 @@ namespace RecruitmentSystem.Models
         public int JobID {get; set;}
 
         [JsonIgnore]
-        public Application? Job {get; set;}
+        public Job? Job {get; set;}
 
 
         [ForeignKey("Candidate")]
@@ -39,7 +29,7 @@ namespace RecruitmentSystem.Models
 
 // Only Reviewers from JobReviewer Table can be here
         [ForeignKey("Employee")]
-        public int ReviewerID {get; set;}
+        public int? ReviewerID {get; set;}
         
         [JsonIgnore]
         public Employee? Reviewer {get; set;}

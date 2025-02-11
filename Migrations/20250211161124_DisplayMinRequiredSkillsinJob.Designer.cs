@@ -11,8 +11,8 @@ using RecruitmentSystem.Data;
 namespace RecruitmentSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250210091208_AddedCandidateSkill")]
-    partial class AddedCandidateSkill
+    [Migration("20250211161124_DisplayMinRequiredSkillsinJob")]
+    partial class DisplayMinRequiredSkillsinJob
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,41 @@ namespace RecruitmentSystem.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("RecruitmentSystem.Models.Application", b =>
+                {
+                    b.Property<int>("ApplicationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApplicationID"));
+
+                    b.Property<int>("CandidateID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("JobID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewerID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationID");
+
+                    b.HasIndex("CandidateID");
+
+                    b.HasIndex("JobID");
+
+                    b.HasIndex("ReviewerID");
+
+                    b.ToTable("Applications");
+                });
 
             modelBuilder.Entity("RecruitmentSystem.Models.Candidate", b =>
                 {
@@ -272,6 +307,29 @@ namespace RecruitmentSystem.Migrations
                     b.ToTable("Jobs");
                 });
 
+            modelBuilder.Entity("RecruitmentSystem.Models.JobReviwer", b =>
+                {
+                    b.Property<int>("ReviewID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
+
+                    b.Property<int>("JobID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewerID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewID");
+
+                    b.HasIndex("JobID");
+
+                    b.HasIndex("ReviewerID");
+
+                    b.ToTable("JobReviwers");
+                });
+
             modelBuilder.Entity("RecruitmentSystem.Models.JobSkill", b =>
                 {
                     b.Property<int>("JobSkillID")
@@ -283,12 +341,17 @@ namespace RecruitmentSystem.Migrations
                     b.Property<int>("JobID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("JobID1")
+                        .HasColumnType("int");
+
                     b.Property<int>("SkillID")
                         .HasColumnType("int");
 
                     b.HasKey("JobSkillID");
 
                     b.HasIndex("JobID");
+
+                    b.HasIndex("JobID1");
 
                     b.HasIndex("SkillID");
 
@@ -361,6 +424,33 @@ namespace RecruitmentSystem.Migrations
                     b.ToTable("SkillCategories");
                 });
 
+            modelBuilder.Entity("RecruitmentSystem.Models.Application", b =>
+                {
+                    b.HasOne("RecruitmentSystem.Models.Candidate", "Candidate")
+                        .WithMany()
+                        .HasForeignKey("CandidateID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecruitmentSystem.Models.Application", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RecruitmentSystem.Models.Employee", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Reviewer");
+                });
+
             modelBuilder.Entity("RecruitmentSystem.Models.Candidate", b =>
                 {
                     b.HasOne("RecruitmentSystem.Models.RUser", "RUser")
@@ -377,7 +467,7 @@ namespace RecruitmentSystem.Migrations
                     b.HasOne("RecruitmentSystem.Models.Candidate", "Candidate")
                         .WithMany()
                         .HasForeignKey("CandidateID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("RecruitmentSystem.Models.Skill", "Skill")
@@ -415,7 +505,7 @@ namespace RecruitmentSystem.Migrations
                     b.HasOne("RecruitmentSystem.Models.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("RecruitmentSystem.Models.Skill", "Skill")
@@ -440,13 +530,36 @@ namespace RecruitmentSystem.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("RecruitmentSystem.Models.JobReviwer", b =>
+                {
+                    b.HasOne("RecruitmentSystem.Models.Application", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RecruitmentSystem.Models.Employee", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Reviewer");
+                });
+
             modelBuilder.Entity("RecruitmentSystem.Models.JobSkill", b =>
                 {
                     b.HasOne("RecruitmentSystem.Models.Job", "Job")
                         .WithMany()
                         .HasForeignKey("JobID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("RecruitmentSystem.Models.Job", null)
+                        .WithMany("JobSkills")
+                        .HasForeignKey("JobID1");
 
                     b.HasOne("RecruitmentSystem.Models.Skill", "Skill")
                         .WithMany()
@@ -468,6 +581,11 @@ namespace RecruitmentSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("SkillCategory");
+                });
+
+            modelBuilder.Entity("RecruitmentSystem.Models.Job", b =>
+                {
+                    b.Navigation("JobSkills");
                 });
 #pragma warning restore 612, 618
         }
