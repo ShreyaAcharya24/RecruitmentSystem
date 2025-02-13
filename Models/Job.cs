@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace RecruitmentSystem.Models
 {
-   
+
     public class Job
     {
         [Key]
@@ -47,8 +47,15 @@ namespace RecruitmentSystem.Models
         public Employee? Employee { get; set; }
 
         // Minimum required skills for a job
-        
-        public ICollection<JobSkill> JobSkills {get; set;} = new List<JobSkill>();
+
+        [JsonIgnore]
+        public ICollection<JobSkill> JobSkills { get; set; } = new List<JobSkill>();
+
+        // Navigation Property
+
+        [JsonIgnore]
+        public ICollection<InterviewRound> InterviewRounds { get; set; }
+
 
     }
 }

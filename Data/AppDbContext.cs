@@ -17,15 +17,16 @@ namespace RecruitmentSystem.Data
         public DbSet<Skill> Skills { get; set; }
 
         public DbSet<Job> Jobs { get; set; }
-
         public DbSet<JobSkill> JobSkills { get; set; }
         public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
-
         public DbSet<CandidateSkill> CandidateSkills { get; set; }
-
-         public DbSet<JobReviwer> JobReviwers { get; set; }
-
+        public DbSet<JobReviwer> JobReviwers { get; set; }
         public DbSet<Application> Applications { get; set; }
+        public DbSet<HiringDrive> HiringDrives { get; set; }
+        public DbSet<InterviewRoundMaster> InterviewRoundMasters { get; set; }
+
+        public DbSet<InterviewRound> InterviewRounds { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -59,11 +60,11 @@ namespace RecruitmentSystem.Data
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
 
             // Relationship: Job → JobSkills (One job can have multiple skills)
-                modelBuilder.Entity<Job>()
-                .HasMany(j => j.JobSkills)
-                .WithOne(js => js.Job)
-                .HasForeignKey(js => js.JobID)
-        .       OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Job>()
+            .HasMany(j => j.JobSkills)
+            .WithOne(js => js.Job)
+            .HasForeignKey(js => js.JobID)
+    .OnDelete(DeleteBehavior.Cascade);
 
             // Relationship between JobSkill and Job
             modelBuilder.Entity<JobSkill>()
@@ -111,39 +112,55 @@ namespace RecruitmentSystem.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Relationship between JobReviewer and Reviewer(Employee) who's gonna review job applications
-                modelBuilder.Entity<JobReviwer>()
-                .HasOne(r => r.Reviewer)
-                .WithMany()
-                .HasForeignKey(r => r.ReviewerID)
-                .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<JobReviwer>()
+            .HasOne(r => r.Reviewer)
+            .WithMany()
+            .HasForeignKey(r => r.ReviewerID)
+            .OnDelete(DeleteBehavior.Cascade);
 
-                 // Relationship between JobReviewer and Job for which a reviewer has been assigned
-                modelBuilder.Entity<JobReviwer>()
-                .HasOne(j => j.Job)
-                .WithMany()
-                .HasForeignKey(j => j.JobID)
-                .OnDelete(DeleteBehavior.Restrict); 
+            // Relationship between JobReviewer and Job for which a reviewer has been assigned
+            modelBuilder.Entity<JobReviwer>()
+            .HasOne(j => j.Job)
+            .WithMany()
+            .HasForeignKey(j => j.JobID)
+            .OnDelete(DeleteBehavior.Restrict);
 
-                // Relationship between Application and Job 
-                modelBuilder.Entity<Application>()
-                .HasOne(a => a.Job)
-                .WithMany()
-                .HasForeignKey(a => a.JobID)
-                .OnDelete(DeleteBehavior.NoAction); 
+            // Relationship between Application and Job 
+            modelBuilder.Entity<Application>()
+            .HasOne(a => a.Job)
+            .WithMany()
+            .HasForeignKey(a => a.JobID)
+            .OnDelete(DeleteBehavior.NoAction);
 
-                 // Relationship between Application and Candidate 
-                modelBuilder.Entity<Application>()
-                .HasOne(a => a.Candidate)
-                .WithMany()
-                .HasForeignKey(a => a.CandidateID)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Relationship between Application and Candidate 
+            modelBuilder.Entity<Application>()
+            .HasOne(a => a.Candidate)
+            .WithMany()
+            .HasForeignKey(a => a.CandidateID)
+            .OnDelete(DeleteBehavior.Cascade);
 
-                // Relationship between Application and Reveiewer 
-                modelBuilder.Entity<Application>()
-                .HasOne(a => a.Reviewer)
-                .WithMany()
-                .HasForeignKey(a => a.ReviewerID)
-                .OnDelete(DeleteBehavior.NoAction);
+            // Relationship between Application and Reveiewer 
+            modelBuilder.Entity<Application>()
+            .HasOne(a => a.Reviewer)
+            .WithMany()
+            .HasForeignKey(a => a.ReviewerID)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<InterviewRound>()
+            .HasOne(ir => ir.Round)
+            .WithMany()
+            .HasForeignKey(ir => ir.RoundID);
+
+            modelBuilder.Entity<InterviewRound>()
+            .HasOne(ir => ir.Job)
+            .WithMany(j => j.InterviewRounds) // Assuming Job has a navigation property `InterviewRounds`
+                .HasForeignKey(ir => ir.JobID);
+
+            modelBuilder.Entity<InterviewRound>()
+                .HasOne(ir => ir.HiringDrive)
+                .WithMany(d => d.InterviewRounds) // Assuming HiringDrive has a navigation property `InterviewRounds`
+                .HasForeignKey(ir => ir.DriveID);
+
 
 
 

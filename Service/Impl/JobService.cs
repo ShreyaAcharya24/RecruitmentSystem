@@ -45,10 +45,46 @@ namespace RecruitmentSystem.Service.Impl
 
         public async Task<Job> GetJobById(int id) => await _jobRepository.GetJobById(id);
 
-        public async Task<Job> AddJob(Job job) => await _jobRepository.AddJob(job);
+         public async Task AddAsync(JobCreateDTO jobDto)
+        {
+            var job = new Job
+            {
+                Position = jobDto.Position,
+                NoOfPositions = jobDto.NoOfPositions,
+                Description = jobDto.Description,
+                Location = jobDto.Location,
+                Salary = jobDto.Salary,
+                Status = jobDto.Status,
+                StatusReason = jobDto.StatusReason,
+                PreferredSkills = jobDto.PreferredSkills,
+                OtherCriteria = jobDto.OtherCriteria,
+                RequiredExperience = jobDto.RequiredExperience,
+                Rounds = jobDto.Rounds,
+                PostedBy = jobDto.PostedBy
+            };
 
-        public async Task<Job> UpdateJob(Job job) => await _jobRepository.UpdateJob(job);
+            await _jobRepository.AddJob(job);
+        }
+        public async Task UpdateAsync(int id, JobCreateDTO jobDto)
+        {
+            var job = await _jobRepository.GetJobById(id);
+            if (job == null) return;
 
+            job.Position = jobDto.Position;
+            job.NoOfPositions = jobDto.NoOfPositions;
+            job.Description = jobDto.Description;
+            job.Location = jobDto.Location;
+            job.Salary = jobDto.Salary;
+            job.Status = jobDto.Status;
+            job.StatusReason = jobDto.StatusReason;
+            job.PreferredSkills = jobDto.PreferredSkills;
+            job.OtherCriteria = jobDto.OtherCriteria;
+            job.RequiredExperience = jobDto.RequiredExperience;
+            job.Rounds = jobDto.Rounds;
+            job.PostedBy = jobDto.PostedBy;
+
+            await _jobRepository.UpdateJob(job);
+        }
         public async Task<bool> DeleteJob(int id) => await _jobRepository.DeleteJob(id);
 
         public async Task<IEnumerable<Job>> GetOpenJobs() => await _jobRepository.GetOpenJobs();
@@ -58,6 +94,14 @@ namespace RecruitmentSystem.Service.Impl
             return await _jobRepository.UpdateJobStatus(jobId, status, statusReason);
         }
 
-        
+        Task<Job> IJobService.AddJob(JobCreateDTO jobDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Job> IJobService.UpdateJob(int id, JobCreateDTO jobDto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

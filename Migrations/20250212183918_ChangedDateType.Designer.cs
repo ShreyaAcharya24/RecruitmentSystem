@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecruitmentSystem.Data;
 
@@ -11,9 +12,11 @@ using RecruitmentSystem.Data;
 namespace RecruitmentSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212183918_ChangedDateType")]
+    partial class ChangedDateType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -273,69 +276,6 @@ namespace RecruitmentSystem.Migrations
                     b.HasKey("DriveID");
 
                     b.ToTable("HiringDrives");
-                });
-
-            modelBuilder.Entity("RecruitmentSystem.Models.InterviewRound", b =>
-                {
-                    b.Property<int>("InterviewRoundID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InterviewRoundID"));
-
-                    b.Property<int?>("DriveID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("InterviewRoundMasterRoundID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsMandatory")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("JobID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoundID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SequenceOrder")
-                        .HasColumnType("int");
-
-                    b.HasKey("InterviewRoundID");
-
-                    b.HasIndex("DriveID");
-
-                    b.HasIndex("InterviewRoundMasterRoundID");
-
-                    b.HasIndex("JobID");
-
-                    b.HasIndex("RoundID");
-
-                    b.ToTable("InterviewRounds");
-                });
-
-            modelBuilder.Entity("RecruitmentSystem.Models.InterviewRoundMaster", b =>
-                {
-                    b.Property<int>("RoundID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoundID"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RoundName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RoundID");
-
-                    b.ToTable("InterviewRoundMasters");
                 });
 
             modelBuilder.Entity("RecruitmentSystem.Models.Job", b =>
@@ -609,35 +549,6 @@ namespace RecruitmentSystem.Migrations
                     b.Navigation("Skill");
                 });
 
-            modelBuilder.Entity("RecruitmentSystem.Models.InterviewRound", b =>
-                {
-                    b.HasOne("RecruitmentSystem.Models.HiringDrive", "HiringDrive")
-                        .WithMany("InterviewRounds")
-                        .HasForeignKey("DriveID");
-
-                    b.HasOne("RecruitmentSystem.Models.InterviewRoundMaster", null)
-                        .WithMany("InterviewRounds")
-                        .HasForeignKey("InterviewRoundMasterRoundID");
-
-                    b.HasOne("RecruitmentSystem.Models.Job", "Job")
-                        .WithMany("InterviewRounds")
-                        .HasForeignKey("JobID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RecruitmentSystem.Models.InterviewRoundMaster", "Round")
-                        .WithMany()
-                        .HasForeignKey("RoundID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HiringDrive");
-
-                    b.Navigation("Job");
-
-                    b.Navigation("Round");
-                });
-
             modelBuilder.Entity("RecruitmentSystem.Models.Job", b =>
                 {
                     b.HasOne("RecruitmentSystem.Models.Employee", "Employee")
@@ -702,20 +613,8 @@ namespace RecruitmentSystem.Migrations
                     b.Navigation("SkillCategory");
                 });
 
-            modelBuilder.Entity("RecruitmentSystem.Models.HiringDrive", b =>
-                {
-                    b.Navigation("InterviewRounds");
-                });
-
-            modelBuilder.Entity("RecruitmentSystem.Models.InterviewRoundMaster", b =>
-                {
-                    b.Navigation("InterviewRounds");
-                });
-
             modelBuilder.Entity("RecruitmentSystem.Models.Job", b =>
                 {
-                    b.Navigation("InterviewRounds");
-
                     b.Navigation("JobSkills");
                 });
 #pragma warning restore 612, 618

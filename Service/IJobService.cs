@@ -7,8 +7,8 @@ namespace RecruitmentSystem.Service
     {
        Task<IEnumerable<JobResponseDTO>> GetAllJobs();
         Task<Job> GetJobById(int id);
-        Task<Job> AddJob(Job job);
-        Task<Job> UpdateJob(Job job);
+        Task<Job> AddJob(JobCreateDTO jobDto);
+        Task<Job> UpdateJob(int id, JobCreateDTO jobDto);
         Task<bool> DeleteJob(int id);
         Task<IEnumerable<Job>> GetOpenJobs();
 

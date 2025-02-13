@@ -48,6 +48,10 @@ builder.Services.AddScoped<IJobReviewerRepository, JobReviewerRepository>();
 builder.Services.AddScoped<IJobReviewerService, JobReviwerService>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<IHiringDriveRepository, HiringDriveRepository>();
+builder.Services.AddScoped<IHiringDriveService, HiringDriveService>();
+builder.Services.AddScoped<IInterviewRoundMasterRepository, InterviewRoundMasterRepository>();
+builder.Services.AddScoped<IInterviewRoundMasterService, InterviewRoundMasterService>();
 
 
 

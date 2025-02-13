@@ -70,14 +70,39 @@ namespace RecruitmentSystem.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] JobCreateDTO jobDto)
+        {
+            await _jobService.AddJob(jobDto);
+            return CreatedAtAction(nameof(GetById), new { id = jobDto.PostedBy }, jobDto);
+        }
 
-    
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Job job)
+        public async Task<IActionResult> Update(int id, [FromBody] JobCreateDTO jobDto)
         {
-            if (id != job.JobID) return BadRequest();
-            return Ok(await _jobService.UpdateJob(job));
+            var job = await _jobService.GetJobById(id);
+            if (job == null)
+                return BadRequest(new { message = "Job ID mismatch" });
+
+            // Update only the necessary fields
+            job.Position = jobDto.Position;
+            job.NoOfPositions = jobDto.NoOfPositions;
+            job.Description = jobDto.Description;
+            job.Location = jobDto.Location;
+            job.Salary = jobDto.Salary;
+            job.Status = jobDto.Status;
+            job.StatusReason = jobDto.StatusReason;
+            job.PreferredSkills = jobDto.PreferredSkills;
+            job.OtherCriteria = jobDto.OtherCriteria;
+            job.RequiredExperience = jobDto.RequiredExperience;
+            job.Rounds = jobDto.Rounds;
+
+            var updatedJob = await _jobService.UpdateJob(id, jobDto);
+            if (updatedJob == null)
+                return NotFound(new { message = "Job not found" });
+
+            return Ok(updatedJob);
         }
 
         [HttpDelete("{id}")]
@@ -109,6 +134,6 @@ namespace RecruitmentSystem.Controllers
             return Ok(new { message = "Job status updated successfully" });
         }
 
-    
+
     }
 }

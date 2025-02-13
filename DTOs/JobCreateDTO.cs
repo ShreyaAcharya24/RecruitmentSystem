@@ -3,8 +3,6 @@ using RecruitmentSystem.Models;
 
 namespace RecruitmentSystem.DTOs
 {
-
-
     public class JobCreateDTO
     {
         public string Position { get; set; }
