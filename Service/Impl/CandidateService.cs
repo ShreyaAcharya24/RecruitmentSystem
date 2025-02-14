@@ -25,34 +25,47 @@ namespace RecruitmentSystem.Service.Impl
             return await _candidateRepository.GetCandidateById(id);
         }
 
-        public async Task<Candidate> AddCandidate(Candidate candidate)
+        public async Task<Candidate> AddCandidate(Candidate candidate, IFormFile resumeFile)
         {
-
             if (string.IsNullOrWhiteSpace(candidate.RUser.Email) || string.IsNullOrWhiteSpace(candidate.RUser.Password))
             {
                 throw new ArgumentException("Email and Password are required.");
             }
 
-            // Check if email already exists
             var existingUser = await _userRepository.GetUserByEmail(candidate.RUser.Email);
             if (existingUser != null)
             {
                 throw new InvalidDataException("Email already in use");
             }
 
-            // Hash password before saving
             candidate.RUser.Password = BCrypt.Net.BCrypt.HashPassword(candidate.RUser.Password);
             candidate.RUser.Role = UserRole.Candidate;
 
-            // Save user first
             var newUser = await _userRepository.AddUser(candidate.RUser);
             candidate.RUserID = newUser.RUserID;
-            // candidate.RUser = null;
 
-            // Save candidate
+            // Handle resume upload
+            if (resumeFile != null && resumeFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(resumeFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await resumeFile.CopyToAsync(fileStream);
+                }
+
+                candidate.Resume = filePath;
+            }
+
             return await _candidateRepository.AddCandidate(candidate);
         }
-
         public async Task<Candidate> UpdateCandidate(Candidate candidate)
         {
             return await _candidateRepository.UpdateCandidate(candidate);

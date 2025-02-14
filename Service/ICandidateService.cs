@@ -6,7 +6,7 @@ namespace RecruitmentSystem.Service
     {
         Task<IEnumerable<Candidate>> GetAllCandidates();
         Task<Candidate> GetCandidateById(int id);
-        Task<Candidate> AddCandidate(Candidate candidate);
+        Task<Candidate> AddCandidate(Candidate candidate,IFormFile resumeFile);
         Task<Candidate> UpdateCandidate(Candidate candidate);
         Task<bool> DeleteCandidate(int id);
 

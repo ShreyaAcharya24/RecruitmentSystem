@@ -1,4 +1,6 @@
 using RecruitmentSystem.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RecruitmentSystem.Repository
 {

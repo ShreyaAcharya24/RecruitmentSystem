@@ -18,40 +18,41 @@ namespace RecruitmentSystem.Controller
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _employeeService.GetAllEmployees());
+            var employees = await _employeeService.GetAllEmployees();
+            return Ok(employees);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await _employeeService.GetEmployeeById(id));
+            var employee = await _employeeService.GetEmployeeById(id);
+            return Ok(employee);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Employee employee)
         {
-            try
-            {
-                var result = await _employeeService.AddEmployee(employee);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _employeeService.AddEmployee(employee);
+            return CreatedAtAction(nameof(GetById), new { id = result.EmployeeID }, result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Employee employee)
         {
-            if (id != employee.EmployeeID) return BadRequest();
-            return Ok(await _employeeService.UpdateEmployee(employee));
+            if (id != employee.EmployeeID)
+            {
+                return BadRequest(new { message = "Employee ID mismatch" });
+            }
+
+            var updatedEmployee = await _employeeService.UpdateEmployee(employee);
+            return Ok(updatedEmployee);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return Ok(await _employeeService.DeleteEmployee(id));
+            await _employeeService.DeleteEmployee(id);
+            return NoContent();
         }
     }
 }

@@ -24,7 +24,6 @@ namespace RecruitmentSystem.Data
         public DbSet<Application> Applications { get; set; }
         public DbSet<HiringDrive> HiringDrives { get; set; }
         public DbSet<InterviewRoundMaster> InterviewRoundMasters { get; set; }
-
         public DbSet<InterviewRound> InterviewRounds { get; set; }
 
 

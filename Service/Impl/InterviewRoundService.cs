@@ -1,45 +1,43 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RecruitmentSystem.Models;
-using RecruitmentSystem.Service;
-namespace RecruitmentSystem.Controllers
+using RecruitmentSystem.Repository;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace RecruitmentSystem.Service.Impl
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class InterviewRoundController : ControllerBase
+    public class InterviewRoundService : IInterviewRoundService
     {
-        private readonly IInterviewRoundService _service;
-        public InterviewRoundController(IInterviewRoundService service) => _service = service;
+        private readonly IInterviewRoundRepository _interviewRoundRepository;
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public InterviewRoundService(IInterviewRoundRepository repository)
         {
-            var result = await _service.GetByIdAsync(id);
-            return result != null ? Ok(result) : NotFound();
+            _interviewRoundRepository = repository;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] InterviewRound interviewRound)
+        public async Task<IEnumerable<InterviewRound>> GetAllAsync()
         {
-            await _service.AddAsync(interviewRound);
-            return CreatedAtAction(nameof(GetById), new { id = interviewRound.InterviewRoundID }, interviewRound);
+            return await _interviewRoundRepository.GetAllAsync();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] InterviewRound interviewRound)
+        public async Task<InterviewRound> GetByIdAsync(int id)
         {
-            if (id != interviewRound.InterviewRoundID) return BadRequest();
-            await _service.UpdateAsync(interviewRound);
-            return NoContent();
+            return await _interviewRoundRepository.GetByIdAsync(id);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task AddAsync(InterviewRound round)
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            await _interviewRoundRepository.AddAsync(round);
+        }
+
+        public async Task UpdateAsync(InterviewRound round)
+        {
+            await _interviewRoundRepository.UpdateAsync(round);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _interviewRoundRepository.DeleteAsync(id);
         }
     }
 }

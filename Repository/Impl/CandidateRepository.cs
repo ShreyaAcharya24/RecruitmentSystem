@@ -18,19 +18,8 @@ namespace RecruitmentSystem.Repository.Impl
         {
 
         return await _context.Candidates
-        .Include(c => c.RUser) // Ensure related User entity is loaded
+        .Include(c => c.RUser)
         .ToListAsync();
-
-            // var candidates = await _context.Candidates.ToListAsync();
-
-            // foreach (var candidate in candidates)
-            // {
-            //     Console.WriteLine($"CandidateID: {candidate.CandidateID} ({candidate.CandidateID.GetType()})");
-            //     Console.WriteLine($"RUserID: {candidate.RUserID} ({candidate.RUserID.GetType()})");
-               
-            // }
-
-            // return candidates;
         }
 
         public async Task<Candidate> GetCandidateById(int id)

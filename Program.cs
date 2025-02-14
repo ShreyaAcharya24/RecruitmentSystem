@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSystem.Data;
 using RecruitmentSystem.Models;
@@ -52,15 +53,21 @@ builder.Services.AddScoped<IHiringDriveRepository, HiringDriveRepository>();
 builder.Services.AddScoped<IHiringDriveService, HiringDriveService>();
 builder.Services.AddScoped<IInterviewRoundMasterRepository, InterviewRoundMasterRepository>();
 builder.Services.AddScoped<IInterviewRoundMasterService, InterviewRoundMasterService>();
+builder.Services.AddScoped<IInterviewRoundRepository, InterviewRoundRepository>();
+builder.Services.AddScoped<IInterviewRoundService, InterviewRoundService>();
 
-
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10485760; // 10MB limit
+});
 
 AppDomain.CurrentDomain.ProcessExit += (s, e) =>
 {
     Console.WriteLine("Application is shutting down...");
 };
 
-
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -72,6 +79,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

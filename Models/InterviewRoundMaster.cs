@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace RecruitmentSystem.Models
 {
@@ -10,8 +11,8 @@ namespace RecruitmentSystem.Models
         public string RoundName { get; set; }
         public string Description { get; set; }
         public bool IsDefault { get; set; } = true;
-
-        // Navigation Property
+       
+        [JsonIgnore]
         public ICollection<InterviewRound> InterviewRounds { get; set; }
 
     }

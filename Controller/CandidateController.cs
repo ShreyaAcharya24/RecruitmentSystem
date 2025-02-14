@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using RecruitmentSystem.Models;
 using RecruitmentSystem.Service;
 
@@ -27,13 +28,13 @@ namespace RecruitmentSystem.Controller
             return Ok(await _candidateService.GetCandidateById(id));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Candidate candidate)
+       [HttpPost]
+        public async Task<IActionResult> Create([FromForm] Candidate candidate, IFormFile resumeFile)
         {
             try
             {
-                var result = await _candidateService.AddCandidate(candidate);
-                return Ok(result);
+                var result = await _candidateService.AddCandidate(candidate, resumeFile);
+                return CreatedAtAction(nameof(GetById), new { id = result.CandidateID }, result);
             }
             catch (Exception ex)
             {
@@ -52,6 +53,27 @@ namespace RecruitmentSystem.Controller
         public async Task<IActionResult> Delete(int id)
         {
             return Ok(await _candidateService.DeleteCandidate(id));
+        }
+
+        [HttpGet("downloadResume/{id}")]
+        public async Task<IActionResult> DownloadResume(int id)
+        {
+            var candidate = await _candidateService.GetCandidateById(id);
+            if (candidate == null || string.IsNullOrEmpty(candidate.Resume))
+                return NotFound(new { message = "Resume not found for this candidate" });
+
+            var filePath = candidate.Resume;
+            if (!System.IO.File.Exists(filePath))
+                return NotFound(new { message = "Resume file not found on the server" });
+
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            return File(fileBytes, contentType, Path.GetFileName(filePath));
         }
     }
 }
