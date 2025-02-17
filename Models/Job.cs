@@ -52,8 +52,6 @@ namespace RecruitmentSystem.Models
         [JsonIgnore]
         public HiringDrive HiringDrive { get; set; }
 
-        [JsonIgnore]
-        public ICollection<JobSkill> JobSkills { get; set; } = new List<JobSkill>();
-
+        public ICollection<JobSkill> JobSkills { get; set; }
     }
 }

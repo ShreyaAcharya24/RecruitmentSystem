@@ -28,9 +28,7 @@ namespace RecruitmentSystem.Data
 
         public DbSet<Verification> Verifications { get; set; }
 
-
-
-
+        public DbSet<CandidateSkillRating> CandidateSkillRatings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -87,7 +85,7 @@ namespace RecruitmentSystem.Data
 
             modelBuilder.Entity<JobSkill>()
                 .HasOne(js => js.Skill)
-                .WithMany()
+                .WithMany(j => j.JobSkills)
                 .HasForeignKey(js => js.SkillID)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -160,20 +158,34 @@ namespace RecruitmentSystem.Data
             modelBuilder.Entity<Interview>()
              .HasOne(i => i.Application)
              .WithMany()
-             .HasForeignKey(i => i.ApplicationID); 
+             .HasForeignKey(i => i.ApplicationID);
 
 
             // InterviewRound -> Interview (SET NULL)
             modelBuilder.Entity<Interview>()
                 .HasOne(i => i.InterviewRound)
                 .WithMany()
-                .HasForeignKey(i => i.InterviewRoundID); // 🔹 Instead of Cascade, set to NULL
+                .HasForeignKey(i => i.InterviewRoundID);
 
             // Panel -> Interview (SET NULL)
             modelBuilder.Entity<Interview>()
                 .HasOne(i => i.Panel)
                 .WithMany()
-                .HasForeignKey(i => i.PanelID); // 🔹 Instead of Cascade, set to NUL
+                .HasForeignKey(i => i.PanelID);
+
+            modelBuilder.Entity<CandidateSkillRating>(entity =>
+            {
+                entity.HasOne(csr => csr.Application)
+                  .WithMany(a => a.CandidateSkillRatings)
+                  .HasForeignKey(csr => csr.ApplicationID)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(csr => csr.JobSkill)
+                  .WithMany(js => js.CandidateSkillRatings)
+                  .HasForeignKey(csr => csr.JobSkillID)
+                  .OnDelete(DeleteBehavior.Cascade);
+            });
+
 
 
 

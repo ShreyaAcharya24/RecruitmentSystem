@@ -57,11 +57,11 @@ namespace RecruitmentSystem.Repository.Impl
         }
 
 
-         public async Task<IEnumerable<Job>> GetOpenJobs()
+        public async Task<IEnumerable<Job>> GetOpenJobs()
         {
             return await _context.Jobs
                 .Include(j => j.Employee)
-                .Where(j => j.Status == JobStatus.Open) 
+                .Where(j => j.Status == JobStatus.Open)
                 .ToListAsync();
         }
 
@@ -76,6 +76,23 @@ namespace RecruitmentSystem.Repository.Impl
             return true;
         }
 
-       
+        public async Task AddSkillsToJob(int jobId, List<int> skillIds)
+        {
+            var job = await GetJobById(jobId);
+
+            if (job != null)
+            {
+                foreach (var skillId in skillIds)
+                {
+                    var skill = await _context.Skills.FindAsync(skillId);
+                    if (skill != null && !job.JobSkills.Any(js => js.SkillID == skillId))
+                    {
+                        job.JobSkills.Add(new JobSkill { JobID = jobId, SkillID = skillId });
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
     }
 }

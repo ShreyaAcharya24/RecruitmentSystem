@@ -16,8 +16,6 @@ namespace RecruitmentSystem.DTOs
         public string OtherCriteria { get; set; }
         public int RequiredExperience { get; set; }
         public int Rounds { get; set; }
-        // public int PostedBy { get; set; }
-
-        public List<JobSkillDTO> JobSkills { get; set; } = new List<JobSkillDTO>();
+         public List<string> Skills { get; set; }
     }
 }

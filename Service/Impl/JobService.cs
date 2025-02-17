@@ -34,57 +34,36 @@ namespace RecruitmentSystem.Service.Impl
                 OtherCriteria = job.OtherCriteria,
                 RequiredExperience = job.RequiredExperience,
                 Rounds = job.Rounds,
-                JobSkills = job.JobSkills.Select(js => new JobSkillDTO
-                {
-                    JobSkillID = js.JobSkillID,
-                    SkillID = js.SkillID,
-                    SkillName = js.Skill?.SkillName
-                }).ToList()
+                Skills = job.JobSkills?.Select(js=>js.Skill.SkillName).ToList()
             }).ToList();
         }
 
-        public async Task<Job> GetJobById(int id) => await _jobRepository.GetJobById(id);
-
-        public async Task AddAsync(JobCreateDTO jobDto)
+        public async Task<JobResponseDTO> GetJobById(int id)
         {
-            var job = new Job
+
+            var job = await _jobRepository.GetJobById(id);
+            if (job == null) return null;
+
+            var result = new JobResponseDTO
             {
-                Position = jobDto.Position,
-                NoOfPositions = jobDto.NoOfPositions,
-                Description = jobDto.Description,
-                Location = jobDto.Location,
-                Salary = jobDto.Salary,
-                Status = jobDto.Status,
-                StatusReason = jobDto.StatusReason,
-                PreferredSkills = jobDto.PreferredSkills,
-                OtherCriteria = jobDto.OtherCriteria,
-                RequiredExperience = jobDto.RequiredExperience,
-                Rounds = jobDto.Rounds,
-                PostedBy = jobDto.PostedBy
+                Position = job.Position,
+                NoOfPositions = job.NoOfPositions,
+                Description = job.Description,
+                Location = job.Location,
+                Salary = job.Salary,
+                Status = job.Status,
+                StatusReason = job.StatusReason,
+                PreferredSkills = job.PreferredSkills,
+                OtherCriteria = job.OtherCriteria,
+                RequiredExperience = job.RequiredExperience,
+                Rounds = job.Rounds,
+                Skills = job.JobSkills?.Select(js => js.Skill.SkillName).ToList()
             };
 
-            await _jobRepository.AddJob(job);
-        }
-        public async Task UpdateAsync(int id, JobCreateDTO jobDto)
-        {
-            var job = await _jobRepository.GetJobById(id);
-            if (job == null) return;
+            return result;
 
-            job.Position = jobDto.Position;
-            job.NoOfPositions = jobDto.NoOfPositions;
-            job.Description = jobDto.Description;
-            job.Location = jobDto.Location;
-            job.Salary = jobDto.Salary;
-            job.Status = jobDto.Status;
-            job.StatusReason = jobDto.StatusReason;
-            job.PreferredSkills = jobDto.PreferredSkills;
-            job.OtherCriteria = jobDto.OtherCriteria;
-            job.RequiredExperience = jobDto.RequiredExperience;
-            job.Rounds = jobDto.Rounds;
-            job.PostedBy = jobDto.PostedBy;
-
-            await _jobRepository.UpdateJob(job);
         }
+
         public async Task<bool> DeleteJob(int id) => await _jobRepository.DeleteJob(id);
 
         public async Task<IEnumerable<Job>> GetOpenJobs() => await _jobRepository.GetOpenJobs();
@@ -113,7 +92,11 @@ namespace RecruitmentSystem.Service.Impl
                 DriveID = jobDto.DriveID
             };
 
-            await _jobRepository.AddJob(job);
+            var createdJob = await _jobRepository.AddJob(job);
+            if (jobDto.SkillIds != null && jobDto.SkillIds.Any())
+            {
+                await _jobRepository.AddSkillsToJob(createdJob.JobID, jobDto.SkillIds);
+            }
             return job;
         }
 
@@ -134,7 +117,7 @@ namespace RecruitmentSystem.Service.Impl
             job.RequiredExperience = jobDto.RequiredExperience;
             job.Rounds = jobDto.Rounds;
             job.PostedBy = jobDto.PostedBy;
-            job.DriveID = jobDto.DriveID; 
+            job.DriveID = jobDto.DriveID;
 
             await _jobRepository.UpdateJob(job);
             return job;

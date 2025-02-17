@@ -10,10 +10,12 @@ namespace RecruitmentSystem.Controller
     public class CandidateController : ControllerBase
     {
         private readonly ICandidateService _candidateService;
+        private readonly CandidateExcelService _candidateExcelService;
 
-        public CandidateController(ICandidateService candidateService)
+        public CandidateController(ICandidateService candidateService, CandidateExcelService candidateExcelService)
         {
             _candidateService = candidateService;
+            _candidateExcelService = candidateExcelService;
         }
 
         [HttpGet]
@@ -28,7 +30,7 @@ namespace RecruitmentSystem.Controller
             return Ok(await _candidateService.GetCandidateById(id));
         }
 
-       [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Create([FromForm] Candidate candidate, IFormFile resumeFile)
         {
             try
@@ -74,6 +76,16 @@ namespace RecruitmentSystem.Controller
 
             var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
             return File(fileBytes, contentType, Path.GetFileName(filePath));
+        }
+
+        [HttpPost("bulk-upload")]
+        public async Task<IActionResult> BulkUploadCandidates(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            var result = await _candidateExcelService.BulkInsertCandidatesFromExcelAsync(file);
+            return Ok(result);
         }
     }
 }

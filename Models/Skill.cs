@@ -16,7 +16,9 @@ namespace RecruitmentSystem.Models
         [ForeignKey("SkillCategory")]
         public int CategoryID { get; set; }
 
-        [JsonIgnore] 
+        [JsonIgnore]
         public SkillCategory? SkillCategory { get; set; }
+
+        public ICollection<JobSkill> JobSkills { get; set; }
     }
 }

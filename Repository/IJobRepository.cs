@@ -10,9 +10,9 @@ namespace RecruitmentSystem.Repository
         Task<Job> AddJob(Job job);
         Task<Job> UpdateJob(Job job);
         Task<bool> DeleteJob(int id);
-
         Task<IEnumerable<Job>> GetOpenJobs();
-         Task<bool> UpdateJobStatus(int jobId, JobStatus status, string statusReason);
+        Task<bool> UpdateJobStatus(int jobId, JobStatus status, string statusReason);
+        Task AddSkillsToJob(int jobId, List<int> skillIds);
 
     }
 }

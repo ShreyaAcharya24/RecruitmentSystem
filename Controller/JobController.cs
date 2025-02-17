@@ -20,27 +20,7 @@ namespace RecruitmentSystem.Controllers
         public async Task<IActionResult> GetAll()
         {
             var jobs = await _jobService.GetAllJobs();
-            var result = jobs.Select(
-                job => new
-                {
-                    job.Position,
-                    job.NoOfPositions,
-                    job.Description,
-                    job.Location,
-                    job.Salary,
-                    job.Status,
-                    job.StatusReason,
-                    job.PreferredSkills,
-                    job.OtherCriteria,
-                    job.RequiredExperience,
-                    job.Rounds,
-                    // // job.PostedBy,
-                    // JobSkills = job.JobSkills.Select(js => new
-                    // {
-                    //     SkillName = js.Skill.SkillName
-                    // }).ToList()
-                });
-            return Ok(result);
+            return Ok(jobs);
         }
 
         [HttpGet("{id}")]
@@ -48,26 +28,8 @@ namespace RecruitmentSystem.Controllers
         {
             var job = await _jobService.GetJobById(id);
             if (job == null) return NotFound(new { message = "Job not found" });
-            var result = new
-            {
-                job.Position,
-                job.NoOfPositions,
-                job.Description,
-                job.Location,
-                job.Salary,
-                job.Status,
-                job.StatusReason,
-                job.PreferredSkills,
-                job.OtherCriteria,
-                job.RequiredExperience,
-                job.Rounds,
-                job.PostedBy,
-                JobSkills = job.JobSkills.Select(js => new
-                {
-                    SkillName = js.Skill.SkillName
-                }).ToList()
-            };
-            return Ok(result);
+
+            return Ok(job);
         }
 
         [HttpPost]

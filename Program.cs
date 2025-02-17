@@ -68,8 +68,10 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IVerificationRepository, VerificationRepository>();
 builder.Services.AddScoped<IVerificationService, VerificationService>();
-
-
+builder.Services.AddScoped<ICandidateSkillRatingRepository, CandidateSkillRatingRepository>();
+builder.Services.AddScoped<ICandidateSkillRatingService, CandidateSkillRatingService>();
+builder.Services.AddScoped<CandidateService>();
+builder.Services.AddScoped<CandidateExcelService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {

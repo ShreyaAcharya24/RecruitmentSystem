@@ -22,5 +22,8 @@ namespace RecruitmentSystem.Models
         [ForeignKey(nameof(SkillID))]
         [JsonIgnore]
         public Skill Skill { get; set; }
+
+        [JsonIgnore]
+        public ICollection<CandidateSkillRating> CandidateSkillRatings { get; set; } = new List<CandidateSkillRating>();
     }
 }

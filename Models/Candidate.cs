@@ -44,7 +44,7 @@ namespace RecruitmentSystem.Models
         public RUser RUser { get; set; }
 
         [MaxLength(500)]
-        public string Resume { get; set; }
+        public string? Resume { get; set; }
 
         public int TotalExperience { get; set; }
     }

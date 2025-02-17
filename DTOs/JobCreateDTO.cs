@@ -18,5 +18,6 @@ namespace RecruitmentSystem.DTOs
         public int Rounds { get; set; } = 3;
         public int PostedBy { get; set; }  // EmployeeID who posted the job
         public int DriveID { get; set; }
+        public List<int> SkillIds { get; set; }
     }
 }

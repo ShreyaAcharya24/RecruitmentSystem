@@ -5,9 +5,10 @@ namespace RecruitmentSystem.Service
 {
     public interface IJobService
     {
-       Task<IEnumerable<JobResponseDTO>> GetAllJobs();
-        Task<Job> GetJobById(int id);
+        
         Task<Job> AddJob(JobCreateDTO jobDto);
+        Task<IEnumerable<JobResponseDTO>> GetAllJobs();
+        Task<JobResponseDTO> GetJobById(int id);
         Task<Job> UpdateJob(int id, JobCreateDTO jobDto);
         Task<bool> DeleteJob(int id);
         Task<IEnumerable<Job>> GetOpenJobs();

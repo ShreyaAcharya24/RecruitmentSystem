@@ -34,5 +34,8 @@ namespace RecruitmentSystem.Models
 
         public string Comments {get; set;}
 
+        [JsonIgnore]
+         public ICollection<CandidateSkillRating> CandidateSkillRatings { get; set; } = new List<CandidateSkillRating>();
+
     }
 }
