@@ -9,11 +9,13 @@ namespace RecruitmentSystem.Service.Impl
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IDepartmentRepository _departmentRepository;
 
-        public EmployeeService(IEmployeeRepository employeeRepository, IUserRepository userRepository)
+        public EmployeeService(IEmployeeRepository employeeRepository, IUserRepository userRepository,IDepartmentRepository departmentRepository)
         {
             _employeeRepository = employeeRepository;
             _userRepository = userRepository;
+            _departmentRepository = departmentRepository;
         }
 
         public async Task<IEnumerable<Employee>> GetAllEmployees()
@@ -25,9 +27,7 @@ namespace RecruitmentSystem.Service.Impl
         {
             var employee = await _employeeRepository.GetEmployeeById(id);
             if (employee == null)
-            {
                 throw new KeyNotFoundException($"Employee with ID {id} not found.");
-            }
             return employee;
         }
 
@@ -49,6 +49,10 @@ namespace RecruitmentSystem.Service.Impl
             {
                 throw new InvalidDataException("Email already in use");
             }
+            var departmentExists = await _departmentRepository.GetDepartmentById(employee.DepartmentID);
+            if (departmentExists == null)
+                throw new KeyNotFoundException("Department does not exist.");
+
 
             // Hash password before saving
             employee.RUser.Password = BCrypt.Net.BCrypt.HashPassword(employee.RUser.Password);
@@ -89,4 +93,3 @@ namespace RecruitmentSystem.Service.Impl
         }
     }
 }
-    

@@ -7,8 +7,8 @@ namespace RecruitmentSystem.Models
         [Key]
         public int DepartmentID { get; set; }
 
-        [Required]
-        [MaxLength(100)]
+        [Required(ErrorMessage = "Department Name is required.")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Department Name can only contain letters and spaces.")]
         public string DepartmentName { get; set; }
     }
 }

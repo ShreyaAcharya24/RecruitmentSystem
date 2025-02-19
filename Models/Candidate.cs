@@ -45,7 +45,6 @@ namespace RecruitmentSystem.Models
 
         [MaxLength(500)]
         public string? Resume { get; set; }
-
         public int TotalExperience { get; set; }
     }
 }

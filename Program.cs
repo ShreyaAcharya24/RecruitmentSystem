@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSystem.Config;
 using RecruitmentSystem.Data;
+using RecruitmentSystem.Middleware;
 using RecruitmentSystem.Models;
 using RecruitmentSystem.Repository;
 using RecruitmentSystem.Repository.Impl;
@@ -83,7 +85,6 @@ AppDomain.CurrentDomain.ProcessExit += (s, e) =>
     Console.WriteLine("Application is shutting down...");
 };
 
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
@@ -98,6 +99,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 

@@ -24,26 +24,36 @@ namespace RecruitmentApplication.Controller
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await _departmentService.GetDepartmentById(id));
+            var department = await _departmentService.GetDepartmentById(id);
+            return Ok(department);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Department department)
         {
-            return Ok(await _departmentService.AddDepartment(department));
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var createdDepartment = await _departmentService.AddDepartment(department);
+            return CreatedAtAction(nameof(GetById), new { id = createdDepartment.DepartmentID }, createdDepartment);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Department department)
         {
-            if (id != department.DepartmentID) return BadRequest();
-            return Ok(await _departmentService.UpdateDepartment(department));
+            if (id != department.DepartmentID)
+                return BadRequest(new { message = "Department Not Found" });
+
+            var updatedDepartment = await _departmentService.UpdateDepartment(department);
+            return Ok(updatedDepartment);
+
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return Ok(await _departmentService.DeleteDepartment(id));
+            bool deleted = await _departmentService.DeleteDepartment(id);
+            return deleted ? Ok(new { message = "Department deleted successfully." }) : NotFound(new { message = "Department not found." });
         }
     }
 }
