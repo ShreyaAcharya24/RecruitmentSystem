@@ -39,11 +39,6 @@ namespace RecruitmentSystem.Controller
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Employee employee)
         {
-            if (id != employee.EmployeeID)
-            {
-                return BadRequest(new { message = "Employee ID mismatch" });
-            }
-
             var updatedEmployee = await _employeeService.UpdateEmployee(employee);
             return Ok(updatedEmployee);
         }
@@ -51,8 +46,8 @@ namespace RecruitmentSystem.Controller
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _employeeService.DeleteEmployee(id);
-            return NoContent();
+            bool deleted = await _employeeService.DeleteEmployee(id);
+            return deleted ? Ok(new { message = "Employee deleted successfully." }) : NotFound(new { message = "Employee not found." });
         }
     }
 }

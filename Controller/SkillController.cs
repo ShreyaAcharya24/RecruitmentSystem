@@ -46,8 +46,7 @@ namespace RecruitmentSystem.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _skillService.DeleteSkill(id);
-            if (!deleted) return NotFound(new { message = "Skill not found" });
-            return Ok(new { message = "Deleted successfully" });
+            return deleted ? Ok(new { message = "Deleted successfully" }) : NotFound(new { message = "Skill deletion failed" });
         }
     }
 }

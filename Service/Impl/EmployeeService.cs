@@ -38,6 +38,7 @@ namespace RecruitmentSystem.Service.Impl
                 throw new ArgumentNullException(nameof(employee), "Employee details cannot be null.");
             }
 
+             // **** Write validations and remove this from here
             if (string.IsNullOrWhiteSpace(employee.RUser.Email) || string.IsNullOrWhiteSpace(employee.RUser.Password))
             {
                 throw new ArgumentException("Email and Password are required.");
@@ -83,13 +84,13 @@ namespace RecruitmentSystem.Service.Impl
 
         public async Task<bool> DeleteEmployee(int id)
         {
-            var existingEmployee = await _employeeRepository.GetEmployeeById(id);
-            if (existingEmployee == null)
+             var isDeleted  = await _employeeRepository.DeleteEmployee(id);
+            if (isDeleted == false)
             {
                 throw new KeyNotFoundException($"Employee with ID {id} not found.");
             }
 
-            return await _employeeRepository.DeleteEmployee(id);
+            return true;
         }
     }
 }

@@ -28,11 +28,9 @@ namespace RecruitmentSystem.Repository.Impl
         public async Task DeleteAsync(int id)
         {
             var hiringDrive = await GetByIdAsync(id);
-            if (hiringDrive != null)
-            {
-                _context.HiringDrives.Remove(hiringDrive);
-                await _context.SaveChangesAsync();
-            }
+            _context.HiringDrives.Remove(hiringDrive);
+            await _context.SaveChangesAsync();
+
         }
     }
 }

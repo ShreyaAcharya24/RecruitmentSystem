@@ -54,6 +54,13 @@ namespace RecruitmentSystem.Data
                 .HasForeignKey(s => s.CategoryID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Skill>()
+            .HasMany(j => j.JobSkills)
+            .WithOne(js => js.Skill)
+            .HasForeignKey(js => js.SkillID)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
             // Relationship between Job and Employee who Posted the job
             modelBuilder.Entity<Job>()
                 .HasOne(j => j.Employee)

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-
 namespace RecruitmentSystem.Models
 {
     public class JobSkill
@@ -9,19 +8,19 @@ namespace RecruitmentSystem.Models
         [Key]
         public int JobSkillID { get; set; }
 
-        [Required]
-        public int JobID { get; set; } // Foreign Key
+        
+        [ForeignKey("Job")]
+        public int JobID { get; set; } 
 
-        [ForeignKey(nameof(JobID))]
         [JsonIgnore]
-        public Job Job { get; set; }
+        public Job? Job { get; set; }
 
-        [Required]
-        public int SkillID { get; set; } // Foreign Key
 
-        [ForeignKey(nameof(SkillID))]
+        [ForeignKey("Skill")]
+        public int SkillID { get; set; } 
+        
         [JsonIgnore]
-        public Skill Skill { get; set; }
+        public Skill? Skill { get; set; }
 
         [JsonIgnore]
         public ICollection<CandidateSkillRating> CandidateSkillRatings { get; set; } = new List<CandidateSkillRating>();

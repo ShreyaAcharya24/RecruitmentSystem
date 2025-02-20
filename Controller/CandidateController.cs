@@ -33,28 +33,23 @@ namespace RecruitmentSystem.Controller
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] Candidate candidate, IFormFile resumeFile)
         {
-            try
-            {
-                var result = await _candidateService.AddCandidate(candidate, resumeFile);
-                return CreatedAtAction(nameof(GetById), new { id = result.CandidateID }, result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var result = await _candidateService.AddCandidate(candidate, resumeFile);
+            return CreatedAtAction(nameof(GetById), new { id = result.CandidateID }, result);
+
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Candidate candidate)
         {
-            if (id != candidate.CandidateID) return BadRequest();
             return Ok(await _candidateService.UpdateCandidate(candidate));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return Ok(await _candidateService.DeleteCandidate(id));
+            bool deleted = await _candidateService.DeleteCandidate(id);
+            return deleted ? Ok(new { message = "Candidate deleted successfully." }) : NotFound(new { message = "Candidate not found." });
         }
 
         [HttpGet("downloadResume/{id}")]

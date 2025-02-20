@@ -12,35 +12,52 @@ namespace RecruitmentSystem.Service.Impl
 
         public async Task<IEnumerable<HiringDrive>> GetAllAsync() => await _repository.GetAllAsync();
 
-        public async Task<HiringDrive> GetByIdAsync(int id) => await _repository.GetByIdAsync(id);
+        public async Task<HiringDrive> GetByIdAsync(int id)
+        {
+            var drive = await _repository.GetByIdAsync(id);
+            if (drive == null)
+                throw new KeyNotFoundException("Drive not found");
 
-        public async Task AddAsync(HiringDriveDto hiringDriveDto){
+            return drive;
+        }
+
+        public async Task AddAsync(HiringDriveDto hiringDriveDto)
+        {
             var hiringDrive = new HiringDrive
-        {
-            DriveName = hiringDriveDto.DriveName,
-            Year = hiringDriveDto.Year,
-            StartDate = hiringDriveDto.StartDate,
-            EndDate = hiringDriveDto.EndDate,
-            Location = hiringDriveDto.Location
-        };
-        await _repository.AddAsync(hiringDrive);
+            {
+                DriveName = hiringDriveDto.DriveName,
+                Year = hiringDriveDto.Year,
+                StartDate = hiringDriveDto.StartDate,
+                EndDate = hiringDriveDto.EndDate,
+                Location = hiringDriveDto.Location
+            };
+            await _repository.AddAsync(hiringDrive);
         }
-         public async Task UpdateAsync(int id, HiringDriveDto hiringDriveDto)
-    {
-        var existingHiringDrive = await _repository.GetByIdAsync(id);
-        if (existingHiringDrive == null)
+        public async Task UpdateAsync(int id, HiringDriveDto hiringDriveDto)
         {
-            throw new KeyNotFoundException("Hiring Drive not found.");
+            var existingHiringDrive = await _repository.GetByIdAsync(id);
+            if (existingHiringDrive == null)
+            {
+                throw new KeyNotFoundException("Hiring Drive not found.");
+            }
+
+            existingHiringDrive.DriveName = hiringDriveDto.DriveName;
+            existingHiringDrive.Year = hiringDriveDto.Year;
+            existingHiringDrive.StartDate = hiringDriveDto.StartDate;
+            existingHiringDrive.EndDate = hiringDriveDto.EndDate;
+            existingHiringDrive.Location = hiringDriveDto.Location;
+
+            await _repository.UpdateAsync(existingHiringDrive);
         }
+        public async Task DeleteAsync(int id)
+        {
+            var existingHiringDrive = await _repository.GetByIdAsync(id);
+            if (existingHiringDrive == null)
+            {
+                throw new KeyNotFoundException("Hiring Drive not found.");
+            }
 
-        existingHiringDrive.DriveName = hiringDriveDto.DriveName;
-        existingHiringDrive.Year = hiringDriveDto.Year;
-        existingHiringDrive.StartDate = hiringDriveDto.StartDate;
-        existingHiringDrive.EndDate = hiringDriveDto.EndDate;
-        existingHiringDrive.Location = hiringDriveDto.Location;
-
-        await _repository.UpdateAsync(existingHiringDrive);
-    }
-        public async Task DeleteAsync(int id) => await _repository.DeleteAsync(id);
+            await _repository.DeleteAsync(id);
+        }
     }
 }

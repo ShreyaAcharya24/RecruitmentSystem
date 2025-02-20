@@ -29,13 +29,9 @@ namespace RecruitmentSystem.Service.Impl
 
         public async Task<Department> AddDepartment(Department department)
         {
-            if (string.IsNullOrWhiteSpace(department.DepartmentName))
-                throw new ArgumentException("Department Name cannot be empty.");
-
             var existingDepartments = await _departmentRepository.GetAllDepartments();
-            if (existingDepartments.Any(d => d.DepartmentName == department.DepartmentName))
+            if (existingDepartments.Any(d => string.Equals(d.DepartmentName, department.DepartmentName, StringComparison.OrdinalIgnoreCase)))
                 throw new InvalidOperationException("Department name already exists.");
-
 
             return await _departmentRepository.AddDepartment(department);
 
@@ -88,6 +84,6 @@ const createDepartment = async (departmentData) => {
 };
 
 
-*/ 
+*/
 
 

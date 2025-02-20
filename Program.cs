@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,11 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 
+// Validation Classes
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<HiringDriveValidator>();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -38,12 +45,14 @@ builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 builder.Services.AddScoped<ICandidateService,CandidateService>();
 builder.Services.AddScoped<ISkillCategoryRepository, SkillCategoryRepository>();
 builder.Services.AddScoped<ISkillCategoryService, SkillCategoryService>();
+
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<ISkillService, SkillService>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IJobSkillRepository, JobSkillRepository>();
 builder.Services.AddScoped<IJobSkillService, JobSkillService>();
+
 builder.Services.AddScoped<IEmployeeSkillRepository, EmployeeSkillRepository>();
 builder.Services.AddScoped<IEmployeeSkillService, EmployeeSkillService>();
 builder.Services.AddScoped<ICandidateSkillRepository, CandidateSkillRepository>();
@@ -75,6 +84,8 @@ builder.Services.AddScoped<ICandidateSkillRatingService, CandidateSkillRatingSer
 builder.Services.AddScoped<CandidateService>();
 builder.Services.AddScoped<CandidateExcelService>();
 
+
+
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 10485760; // 10MB limit
@@ -84,6 +95,7 @@ AppDomain.CurrentDomain.ProcessExit += (s, e) =>
 {
     Console.WriteLine("Application is shutting down...");
 };
+
 
 builder.Services.AddProblemDetails();
 
